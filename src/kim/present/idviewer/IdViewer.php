@@ -21,6 +21,10 @@ final class IdViewer extends PluginBase implements Listener{
         $this->getConfig()->save();
     }
 
+    /**
+     * @priority MONITOR
+     * @handleCancelled true
+     */
     public function onPlayerInteract(PlayerInteractEvent $event) : void{
         $player = $event->getPlayer();
         if(!$this->isViewer($player))
@@ -31,6 +35,10 @@ final class IdViewer extends PluginBase implements Listener{
         $player->sendPopup(TextFormat::AQUA . "{$block->getName()} ({$block->getId()}:{$block->getMeta()}) / asItem({$item->getId()}:{$item->getMeta()})");
     }
 
+    /**
+     * @priority MONITOR
+     * @handleCancelled true
+     */
     public function PlayerItemHeld(PlayerItemHeldEvent $event) : void{
         $player = $event->getPlayer();
         if(!$this->isViewer($player))
