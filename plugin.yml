@@ -5,4 +5,14 @@ version: 0.1.0
 api: [ 4.0.0 ]
 author: PresentKim
 description: Utility that makes it easy to check the IDs of items and blocks
+
+commands:
+  idv:
+    description: On/off of ID viewer
+    permission: idv.cmd
+
+permissions:
+  idv.cmd:
+    description: /idv command
+    default: op
 ...
