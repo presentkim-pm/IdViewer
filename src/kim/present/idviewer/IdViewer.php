@@ -18,6 +18,10 @@ final class IdViewer extends PluginBase implements Listener{
     }
 
     protected function onDisable() : void{
+        $dataFolder = $this->getDataFolder();
+        if(!file_exists($dataFolder)){
+            mkdir($dataFolder);
+        }
         $this->getConfig()->save();
     }
 
