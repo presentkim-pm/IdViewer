@@ -74,7 +74,7 @@ final class IdViewer extends PluginBase implements Listener{
      * @priority MONITOR
      * @handleCancelled true
      */
-    public function PlayerItemHeld(PlayerItemHeldEvent $event) : void{
+    public function onPlayerItemHeld(PlayerItemHeldEvent $event) : void{
         $player = $event->getPlayer();
         if(!$this->isViewer($player))
             return;
