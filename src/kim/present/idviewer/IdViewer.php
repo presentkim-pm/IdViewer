@@ -38,12 +38,19 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\player\Player;
 use pocketmine\plugin\PluginBase;
+use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\TextFormat;
 
 use function file_exists;
 use function mkdir;
 
 final class IdViewer extends PluginBase implements Listener{
+    use SingletonTrait;
+
+    protected function onLoad() : void{
+        self::$instance = $this;
+    }
+
     protected function onEnable() : void{
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
     }
