@@ -1,33 +1,40 @@
-name: Build Artifact
+name : Build Artifact
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on :
+  push :
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+jobs :
+  build :
+    name : Build Artifact
+    runs-on : ubuntu-20.04
+    strategy :
+      fail-fast : false
 
-    steps:
-      - uses: actions/checkout@v2
+    steps :
+      - uses : actions/checkout@v2
+        with :
+          submodules : true
 
-      - name: Make '.build' directory
-        run: mkdir .build
+      - uses : shivammathur/setup-php@2.12.0
+        with :
+          php-version : 8.0
 
-      - name: Download DevTools/ConsoleScript.php
-        run: wget -O .build/build.php https://raw.githubusercontent.com/pmmp/DevTools/master/src/DevTools/ConsoleScript.php
+      - name : Build numbering
+        run : |
+          BUILD_NUMBER=$GITHUB_RUN_NUMBER
+          echo "Build number: $BUILD_NUMBER"
+          sed -i -E "s/version\: ([0-9]+)\.([0-9]+)\.([0-9]+)/\0-BUILD${BUILD_NUMBER}/g" ${{ github.workspace }}/plugin.yml
 
-      - name: Build source to artifact.phar
-        run: php -dphar.readonly=0 .build/build.php --make ./ --out .build/artifact.phar
+      - name : Download DevTools/ConsoleScript.php
+        run : |
+          mkdir ${{ github.workspace }}/build
+          wget -O ${{ github.workspace }}/build/build.php https://raw.githubusercontent.com/pmmp/DevTools/master/src/DevTools/ConsoleScript.php
 
-      - name: Display structure of current working directory
-        run: ls -R
+      - name : Build PocketMine-MP.phar
+        run : php -dphar.readonly=0 ${{ github.workspace }}//build/build.php --make ${{ github.workspace }}/ --out ${{ github.workspace }}/build/artifact.phar
 
-      - name: Upload artifact.phar
-        uses: actions/upload-artifact@v2.2.2
-        with:
-          name: artifact
-          path: .build/artifact.phar
-          retention-days: 90
+      - name : Upload release artifacts
+        uses : actions/upload-artifact@v2
+        with :
+          name : release_artifacts
+          path : ${{ github.workspace }}/build/artifact.phar
