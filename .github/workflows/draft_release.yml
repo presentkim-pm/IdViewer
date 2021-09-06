@@ -1,0 +1,56 @@
+name : Create GitHub draft release
+
+on :
+  push :
+
+jobs :
+  draft :
+    name : Create GitHub draft release
+    if : "startsWith(github.event.head_commit.message, 'version :')"
+    runs-on : ubuntu-20.04
+    strategy :
+      fail-fast : false
+
+    steps :
+      - uses : actions/checkout@v2
+        with :
+          submodules : true
+
+      - uses : shivammathur/setup-php@2.12.0
+        with :
+          php-version : 8.0
+
+      - name : Prepare
+        run : |
+          SOURCE_DIR=${{ github.workspace }}
+          BUILD_DIR=${HOME}/build
+          PLUGIN_NAME=$(grep -oP '(?<=name\: )([^\n \t]+)' ${SOURCE_DIR}/plugin.yml)
+          PLUGIN_VERSION=$(grep -oP '(?<=version\: )([^\n \t]+)' ${SOURCE_DIR}/plugin.yml)
+          ARTIFACT_FILE=${SOURCE_DIR}/${PLUGIN_NAME}_v${PLUGIN_VERSION}.phar
+
+          echo "SOURCE_DIR=${SOURCE_DIR}" >> $GITHUB_ENV
+          echo "BUILD_DIR=${BUILD_DIR}" >> $GITHUB_ENV
+          echo "PLUGIN_NAME=${PLUGIN_NAME}" >> $GITHUB_ENV
+          echo "PLUGIN_VERSION=${PLUGIN_VERSION}" >> $GITHUB_ENV
+          echo "ARTIFACT_FILE=${ARTIFACT_FILE}" >> $GITHUB_ENV
+
+      - name : Build plugin
+        run : |
+          BUILD=${{ env.BUILD_DIR }}/build.php
+
+          mkdir -p ${{ env.BUILD_DIR }}
+          mkdir -p ${{ env.SOURCE_DIR }}/resources
+          wget -O ${BUILD} https://raw.githubusercontent.com/pmmp/DevTools/master/src/DevTools/ConsoleScript.php
+          php -dphar.readonly=0 ${BUILD} --make ${{ env.SOURCE_DIR }} --out ${{ env.ARTIFACT_FILE }}
+
+      - name : Creaft draft release
+        uses : ncipollo/release-action@v1.8.6
+        with :
+          artifacts : ${{ env.ARTIFACT_FILE }}
+          commit : ${{ github.sha }}
+          draft : true
+          name : v${{ env.PLUGIN_VERSION }}
+          tag : ${{ env.PLUGIN_VERSION }}
+          token : ${{ secrets.GITHUB_TOKEN }}
+          body : |
+            **${{ env.PLUGIN_NAME }} v${{ env.PLUGIN_VERSION }}** released!
