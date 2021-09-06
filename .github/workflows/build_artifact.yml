@@ -21,17 +21,17 @@ jobs :
 
       - name : Prepare
         run : |
+          BUILD_NUMBER=${{ github.run_number }}
           SOURCE_DIR=${{ github.workspace }}
-          BUILD_DIR=${SOURCE_DIR}/build
           PLUGIN_NAME=$(grep -oP '(?<=name\: )([^\n \t]+)' ${SOURCE_DIR}/plugin.yml)
           PLUGIN_VERSION=$(grep -oP '(?<=version\: )([^\n \t]+)' ${SOURCE_DIR}/plugin.yml)
-          ARTIFACT_NAME=${BUILD_DIR}/${PLUGIN_NAME}_v${PLUGIN_VERSION}-Build${BUILD_NUMBER}.phar
+          ARTIFACT_NAME=${SOURCE_DIR}/${PLUGIN_NAME}_v${PLUGIN_VERSION}-Build${BUILD_NUMBER}.phar
 
-          echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
-          echo "BUILD_DIR=${{ github.workspace }}/build" >> $GITHUB_ENV
           echo "SOURCE_DIR=${SOURCE_DIR}" >> $GITHUB_ENV
+          echo "BUILD_DIR=${SOURCE_DIR}/build" >> $GITHUB_ENV
           echo "PLUGIN_NAME=${PLUGIN_NAME}" >> $GITHUB_ENV
           echo "PLUGIN_VERSION=${PLUGIN_VERSION}" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=${BUILD_NUMBER}" >> $GITHUB_ENV
           echo "ARTIFACT_NAME=${ARTIFACT_NAME}" >> $GITHUB_ENV
 
       - name : Append build number into version
