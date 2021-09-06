@@ -52,4 +52,7 @@ jobs :
         uses : actions/upload-artifact@v2
         with :
           name : release_artifacts
-          path : ${{ env.ARTIFACT_NAME }}
+          path : |
+            ${{ env.ARTIFACT_NAME }}
+            ${{ env.SOURCE_DIR }}/*.md
+            ${{ env.SOURCE_DIR }}/LICENSE*
