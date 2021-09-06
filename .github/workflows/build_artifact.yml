@@ -6,6 +6,7 @@ on :
 jobs :
   build :
     name : Build Artifact
+    if : "!startsWith(github.event.head_commit.message, 'version :')"
     runs-on : ubuntu-20.04
     strategy :
       fail-fast : false
@@ -49,10 +50,20 @@ jobs :
           wget -O ${BUILD} https://raw.githubusercontent.com/pmmp/DevTools/master/src/DevTools/ConsoleScript.php
           php -dphar.readonly=0 ${BUILD} --make ${{ env.SOURCE_DIR }} --out ${{ env.ARTIFACT_FILE }}
 
-      - name : Upload release artifacts
+      - name : Upload plugin source
         uses : actions/upload-artifact@v2
         with :
-          name : ${{ env.PLUGIN_NAME }}-Build${{ env.BUILD_NUMBER }}
+          name : ${{ env.PLUGIN_NAME }}-source${{ env.BUILD_NUMBER }}
+          path : |
+            ${{ env.SOURCE_DIR }}
+            !${{ env.ARTIFACT_FILE }}
+            !**/.*/*
+            !**/.*
+
+      - name : Upload plugin phar
+        uses : actions/upload-artifact@v2
+        with :
+          name : ${{ env.PLUGIN_NAME }}-build${{ env.BUILD_NUMBER }}
           path : |
             ${{ env.ARTIFACT_FILE }}
             ${{ env.SOURCE_DIR }}/*.md
