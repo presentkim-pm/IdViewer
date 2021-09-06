@@ -1,14 +1,15 @@
 ---
 name: IdViewer
 main: kim\present\idviewer\IdViewer
-version: 0.1.0
+version: 1.0.0
+build_number: 0
 api: [ 4.0.0 ]
 author: PresentKim
 description: Utility that makes it easy to check the IDs of items and blocks
 
 commands:
   idv:
-    description: On/off of ID viewer
+    description: Toggle the ID view
     permission: idv.cmd
 
 permissions:
